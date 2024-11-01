@@ -58,16 +58,15 @@ Options
 
 ```
 '--num_workers', type=int, default=0
-'--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo']
-'--model_type', type=str, default='fcn',
-				choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn']
+'--dataset', type=str, default='YOUR_DATA'
+'--model_type', type=str, default='short_res'
 '--n_epochs', type=int, default=200
 '--batch_size', type=int, default=16
 '--lr', type=float, default=1e-4
 '--use_tensorboard', type=int, default=1
-'--model_save_path', type=str, default='./../models'
+'--model_save_path', type=str, default='./../models/short_res'
 '--model_load_path', type=str, default='.'
-'--data_path', type=str, default='./data'
+'--data_path', type=str, default='./YOUR_DATA_PATH'
 '--log_step', type=int, default=20
 ```
 
@@ -80,12 +79,32 @@ Options
 
 ```
 '--num_workers', type=int, default=0
-'--dataset', type=str, default='mtat', choices=['mtat', 'msd', 'jamendo']
-'--model_type', type=str, default='fcn',
-                choices=['fcn', 'musicnn', 'crnn', 'sample', 'se', 'short', 'short_res', 'attention', 'hcnn']
+'--dataset', type=str, default='mtat'
+'--model_type', type=str, default='short_res'
 '--batch_size', type=int, default=16
 '--model_load_path', type=str, default='.'
-'--data_path', type=str, default='./data'
+'--data_path', type=str, default='./YOUR_DATA_PATH'
+```
+
+## Finetune
+`cd training/`
+
+`python -u fine_tune.py --data_path YOUR_DATA_PATH`
+
+Options
+```
+'--num_workers', type=int, default=0
+'--dataset', type=str, default='YOUR_DATA'
+'--model_type', type=str, default='short_res'
+'--n_epochs', type=int, default=200
+'--batch_size', type=int, default=8
+'--lr', type=float, default=1e-5
+'--use_tensorboard', type=int, default=1
+'--model_save_path', type=str, default='./../models/YOUR_DATA/finetune'
+'--data_path', type=str, default='./YOUR_DATA_PATH'
+'--log_step', type=int, default=20
+'--pretrained_model_path', type=str, default='./../models/YOUR_DATA'
+'--finetune_model_path', type=str, default='./../models/YOUR_DATA/finetune'
 ```
 
 ## Performance Comparison
