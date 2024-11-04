@@ -1,0 +1,11 @@
+*.out
+__pycache__/
+training/runs/
+training/data/
+training/labelstudio/
+*.out
+__pycache__/
+training/models/
+training/runs/
+mp3_echonest_xml/
+.DS_Store

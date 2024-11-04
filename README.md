@@ -64,7 +64,7 @@ Options
 '--batch_size', type=int, default=16
 '--lr', type=float, default=1e-4
 '--use_tensorboard', type=int, default=1
-'--model_save_path', type=str, default='./../models/short_res'
+'--model_save_path', type=str, default='./../models/YOUR_DATA/short_res'
 '--model_load_path', type=str, default='.'
 '--data_path', type=str, default='./YOUR_DATA_PATH'
 '--log_step', type=int, default=20

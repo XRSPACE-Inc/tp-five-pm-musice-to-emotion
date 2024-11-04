@@ -1,39 +1,24 @@
 # coding: utf-8
-import pickle
-import os
-import time
-import numpy as np
-import pandas as pd
-from sklearn import metrics
-import datetime
-import csv
-import tqdm
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-from sklearn.preprocessing import LabelBinarizer
+from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
 from torch.utils.tensorboard import SummaryWriter
+from sklearn.preprocessing import LabelBinarizer
 from torch.autograd import Variable
-
+import torch.nn.functional as F
+import matplotlib.pyplot as plt
+from sklearn import metrics
+import torch.nn as nn
 import model as Model
+import pandas as pd
+import numpy as np
+import datetime
+import pickle
+import torch
+import time
+import tqdm
+import csv
+import os
 
-
-skip_files = set(['TRAIISZ128F42684BB', 'TRAONEQ128F42A8AB7', 'TRADRNH128E0784511', 'TRBGHEU128F92D778F',
-                 'TRCHYIF128F1464CE7', 'TRCVDKQ128E0790C86', 'TREWVFM128F146816E', 'TREQRIV128F1468B08',
-                 'TREUVBN128F1468AC9', 'TRDKNBI128F14682B0', 'TRFWOAG128F14B12CB', 'TRFIYAF128F14688A6',
-                 'TRGYAEZ128F14A473F', 'TRIXPRK128F1468472', 'TRAQKCW128F9352A52', 'TRLAWQU128F1468AC8',
-                 'TRMSPLW128F14A544A', 'TRLNGQT128F1468261', 'TROTUWC128F1468AB4', 'TRNDAXE128F934C50E',
-                 'TRNHIBI128EF35F57D', 'TRMOREL128F1468AC4',  'TRPNFAG128F146825F', 'TRIXPOY128F14A46C7',
-                 'TROCQVE128F1468AC6', 'TRPCXJI128F14688A8', 'TRQKRKL128F1468AAE', 'TRPKNDC128F145998B',
-                 'TRRUHEH128F1468AAD', 'TRLUSKX128F14A4E50', 'TRMIRQA128F92F11F1', 'TRSRUXF128F1468784',
-                 'TRTNQKQ128F931C74D',  'TRTTUYE128F4244068', 'TRUQZKD128F1468243', 'TRUINWL128F1468258',
-                 'TRVRHOY128F14680BC', 'TRWVEYR128F1458A6F', 'TRVLISA128F1468960', 'TRYDUYU128F92F6BE0',
-                 'TRYOLFS128F9308346', 'TRMVCVS128F1468256', 'TRZSPHR128F1468AAC', 'TRXBJBW128F92EBD96',
-                 'TRYPGJX128F1468479', 'TRYNNNZ128F1468994', 'TRVDOVF128F92DC7F3', 'TRWUHZQ128F1451979',
-                 'TRXMAVV128F146825C', 'TRYNMEX128F14A401D', 'TREGWSL128F92C9D42', 'TRJKZDA12903CFBA43',
-                  'TRBGJIZ128F92E42BC', 'TRVWNOH128E0788B78', 'TRCGBRK128F146A901'])
-
-TAGS = ['genre---downtempo', 'genre---ambient', 'genre---rock', 'instrument---synthesizer', 'genre---atmospheric', 'genre---indie', 'instrument---electricpiano', 'genre---newage', 'instrument---strings', 'instrument---drums', 'instrument---drummachine', 'genre---techno', 'instrument---guitar', 'genre---alternative', 'genre---easylistening', 'genre---instrumentalpop', 'genre---chillout', 'genre---metal', 'mood/theme---happy', 'genre---lounge', 'genre---reggae', 'genre---popfolk', 'genre---orchestral', 'instrument---acousticguitar', 'genre---poprock', 'instrument---piano', 'genre---trance', 'genre---dance', 'instrument---electricguitar', 'genre---soundtrack', 'genre---house', 'genre---hiphop', 'genre---classical', 'mood/theme---energetic', 'genre---electronic', 'genre---world', 'genre---experimental', 'instrument---violin', 'genre---folk', 'mood/theme---emotional', 'instrument---voice', 'instrument---keyboard', 'genre---pop', 'instrument---bass', 'instrument---computer', 'mood/theme---film', 'genre---triphop', 'genre---jazz', 'genre---funk', 'mood/theme---relaxing']
+labelstudio_TAGS = ['genre---IT', 'genre---HQ', 'genre---PB', 'genre---LE', 'genre---CF']
 
 def read_file(tsv_file):
     tracks = {}
@@ -43,12 +28,10 @@ def read_file(tsv_file):
         for row in reader:
             track_id = row[0]
             tracks[track_id] = {
-                'path': row[3].replace('.mp3', '.npy'),
+                'path': row[3].replace('.wav', '.npy'),
                 'tags': row[5:],
             }
     return tracks
-
-
 
 class Solver(object):
     def __init__(self, data_loader, config):
@@ -81,43 +64,14 @@ class Solver(object):
         self.writer = SummaryWriter()
 
     def get_dataset(self):
-        if self.dataset == 'mtat':
-            self.valid_list = np.load('./../split/mtat/valid.npy')
-            self.binary = np.load('./../split/mtat/binary.npy')
-        if self.dataset == 'msd':
-            train_file = os.path.join('./../split/msd','filtered_list_train.cP')
-            train_list = pickle.load(open(train_file,'rb'), encoding='bytes')
-            val_set = train_list[201680:]
-            self.valid_list = [value for value in val_set if value.decode() not in skip_files]
-            id2tag_file = os.path.join('./../split/msd', 'msd_id_to_tag_vector.cP')
-            self.id2tag = pickle.load(open(id2tag_file,'rb'), encoding='bytes')
-        if self.dataset == 'jamendo':
-            train_file = os.path.join('./../split/mtg-jamendo', 'autotagging_top50tags-validation.tsv')
-            self.file_dict= read_file(train_file)
-            self.valid_list= list(read_file(train_file).keys())
-            self.mlb = LabelBinarizer().fit(TAGS)
-
-
+        if self.dataset == 'labelstudio':
+            self.file_dict = np.load('./../split/labelstudio/jvalid.npy', allow_pickle=True).item()
+            self.valid_list = list(self.file_dict.keys())
+            self.mlb = LabelBinarizer().fit(labelstudio_TAGS)
 
     def get_model(self):
-        if self.model_type == 'fcn':
-            return Model.FCN()
-        elif self.model_type == 'musicnn':
-            return Model.Musicnn(dataset=self.dataset)
-        elif self.model_type == 'crnn':
-            return Model.CRNN()
-        elif self.model_type == 'sample':
-            return Model.SampleCNN()
-        elif self.model_type == 'se':
-            return Model.SampleCNNSE()
-        elif self.model_type == 'short':
-            return Model.ShortChunkCNN()
-        elif self.model_type == 'short_res':
+        if self.model_type == 'short_res':
             return Model.ShortChunkCNN_Res()
-        elif self.model_type == 'attention':
-            return Model.CNNSA()
-        elif self.model_type == 'hcnn':
-            return Model.HarmonicCNN()
 
     def build_model(self):
         # model
@@ -221,16 +175,11 @@ class Solver(object):
 
     def get_tensor(self, fn):
         # load audio
-        if self.dataset == 'mtat':
-            npy_path = os.path.join(self.data_path, 'mtat', 'npy', fn.split('/')[1][:-3]) + 'npy'
-        elif self.dataset == 'msd':
-            msid = fn.decode()
-            filename = '{}/{}/{}/{}.npy'.format(msid[2], msid[3], msid[4], msid)
-            npy_path = os.path.join(self.data_path, filename)
-        elif self.dataset == 'jamendo':
+        if self.dataset == 'labelstudio':
             filename = self.file_dict[fn]['path']
-            npy_path = os.path.join(self.data_path, filename)
-        raw = np.load(npy_path, mmap_mode='r')
+            npy_path = os.path.join(self.data_path, "npy", filename)
+
+        raw = np.load(npy_path, allow_pickle=True)
 
         # split chunk
         length = len(raw)
@@ -272,31 +221,25 @@ class Solver(object):
         losses = []
         reconst_loss = self.get_loss_function()
         index = 0
+
         for line in tqdm.tqdm(self.valid_list):
-            if self.dataset == 'mtat':
-                ix, fn = line.split('\t')
-            elif self.dataset == 'msd':
-                fn = line
-                if fn.decode() in skip_files:
-                    continue
-            elif self.dataset == 'jamendo':
+            if self.dataset == 'labelstudio':
                 fn = line
 
             # load and split
             x = self.get_tensor(fn)
 
             # ground truth
-            if self.dataset == 'mtat':
-                ground_truth = self.binary[int(ix)]
-            elif self.dataset == 'msd':
-                ground_truth = self.id2tag[fn].flatten()
-            elif self.dataset == 'jamendo':
+            if self.dataset == 'labelstudio':
                 ground_truth = np.sum(self.mlb.transform(self.file_dict[fn]['tags']), axis=0)
-
 
             # forward
             x = self.to_var(x)
-            y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
+            if self.is_cuda:
+                y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)]).cuda()
+            else:
+                y = torch.tensor([ground_truth.astype('float32') for i in range(self.batch_size)])
+
             out = self.model(x)
             loss = reconst_loss(out, y)
             losses.append(float(loss.data))
@@ -317,5 +260,6 @@ class Solver(object):
         self.writer.add_scalar('Loss/valid', loss, epoch)
         self.writer.add_scalar('AUC/ROC', roc_auc, epoch)
         self.writer.add_scalar('AUC/PR', pr_auc, epoch)
+
         return roc_auc, pr_auc, loss
 
