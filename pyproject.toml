@@ -1,0 +1,69 @@
+[tool.poetry]
+name = "music2emotion"
+version = "0.1.0"
+description = ""
+authors = ["BuluHuXR <bulu.hu@xrspace.io>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.11"
+numpy = "^1.22"
+# torch = { url = "https://download.pytorch.org/whl/cu116/torch-1.12.1%2Bcu116-cp310-cp310-win_amd64.whl"}
+# torchaudio = { url = "https://download.pytorch.org/whl/cu116/torchaudio-0.12.1%2Bcu116-cp310-cp310-win_amd64.whl"}
+# torchvision = { url = "https://download.pytorch.org/whl/cu116/torchvision-0.13.1%2Bcu116-cp310-cp310-win_amd64.whl"}
+
+torch = "^1.12.1"
+torchaudio = "^0.12.1"
+torchvision = "^0.13.1"
+# python = "^3.10"
+# numpy = "1.17.4"
+# numpy = "1.21.0"
+# numpy = "2.1.2"
+# llvmlite = "0.33.0"
+# numba = "0.54.0"
+# scipy = "1.3.3"
+# torch = "1.2.0"
+# torchaudio = "0.3.0"
+
+
+# python = ">=3.8,<3.11"
+# numpy = ">=1.21,<2.0"
+numba = ">=0.55.0,<0.57"
+llvmlite = ">=0.39,<0.44"
+scipy = "^1.8"
+#torch = "1.12.1"
+#torchaudio = "0.12.1"
+scikit-learn = ">=1.0,<1.2"
+#scikit-learn = "0.22"
+# numpy = "1.21.6"
+# grpcio = "1.25.0"
+grpcio = "^1.50.0"
+
+audioread = "2.1.8"
+essentia = "2.1b6.dev1177"
+fire = "0.2.1"
+h5py = "^3.0"
+librosa = "0.8.1"
+matplotlib = "3.3.0"
+pandas = "^1.5.0"
+
+six = "1.15.0"
+SoundFile = "0.10.3.post1"
+sox = "1.3.7"
+tensorboard = "2.5.0"
+tensorflow-estimator = "2.5.0"
+termcolor = "1.1.0"
+tqdm = "4.61.0"
+protobuf = "3.20.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]

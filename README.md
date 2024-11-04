@@ -34,10 +34,17 @@ PyTorch implementation of state-of-the-art music tagging models :notes:
 
 
 ## Requirements
+Conda version
 ```
-conda create -n YOUR_ENV_NAME python=3.7
+conda create -n YOUR_ENV_NAME python=3.8
 conda activate YOUR_ENV_NAME
 pip install -r requirements.txt
+```
+
+Poetry version
+```
+brew install poetry
+poetry install 
 ```
 
 
