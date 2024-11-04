@@ -35,7 +35,7 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--use_tensorboard', type=int, default=1)
-    parser.add_argument('--model_save_path', type=str, default='./../models/labelstudio/stort_res')
+    parser.add_argument('--model_save_path', type=str, default='./../models/labelstudio/short_res')
     parser.add_argument('--model_load_path', type=str, default='.')
     parser.add_argument('--data_path', type=str, default='./data')
     parser.add_argument('--log_step', type=int, default=20)

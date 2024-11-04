@@ -70,22 +70,6 @@ Options
 '--log_step', type=int, default=20
 ```
 
-## Evaluation
-`cd training/`
-
-`python -u eval.py --data_path YOUR_DATA_PATH`
-
-Options
-
-```
-'--num_workers', type=int, default=0
-'--dataset', type=str, default='mtat'
-'--model_type', type=str, default='short_res'
-'--batch_size', type=int, default=16
-'--model_load_path', type=str, default='.'
-'--data_path', type=str, default='./YOUR_DATA_PATH'
-```
-
 ## Finetune
 `cd training/`
 
@@ -100,11 +84,10 @@ Options
 '--batch_size', type=int, default=8
 '--lr', type=float, default=1e-5
 '--use_tensorboard', type=int, default=1
-'--model_save_path', type=str, default='./../models/YOUR_DATA/finetune'
+'--finetune_model_save_path', type=str, default='./../models/YOUR_DATA/finetune'
 '--data_path', type=str, default='./YOUR_DATA_PATH'
 '--log_step', type=int, default=20
 '--pretrained_model_path', type=str, default='./../models/YOUR_DATA'
-'--finetune_model_path', type=str, default='./../models/YOUR_DATA/finetune'
 ```
 
 ## Performance Comparison
